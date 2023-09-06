@@ -204,3 +204,7 @@ Cons:
 **N1**: SQL Server is a mature relational database management that can be used for store various types in native format including relational data and graph data. The query language for relational store is mostly compatible with SQL Server, so legacy code is easier to migrate for a new solution. Also many SQL Server tools are compatible with Azure Cosmos DB.
 
 **T1**: While this combination give us an ability to utilize the native and best-of-class tools for relational and graph data, using two separate products for storing rules and input data can be a significant overhead for the development and maintenance of the calculation engine compared to other solutions.
+
+## Proposed solution
+
+The proposed solution is to use Azure Cosmos DB with Gremlin API to store the rules for the calculation engine in a native graph format. The input data can be stored in Cosmos DB SQL database.
