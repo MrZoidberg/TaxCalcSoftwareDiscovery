@@ -56,4 +56,6 @@ Given the fact that dynamic UI rules (what to show and what not) and tax calcula
 
 - Trade off of different micro-service architecture options so that requirements – 1) calculation engine shall be a micro-service called by 3rd party and 2) calculation engine shall provide instant calculation result is satisfied.
 
+[Result](Tax%20calculation%20engine%20architecture%20trade-off.md)
+
 Do both trade-off's in terms of Azure cloud or cloud provider of your choice. Make sure trade-off approach or option is described and approach, service or libraries you will use is clear
