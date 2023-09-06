@@ -10,10 +10,8 @@ This trade-off analysis is evaluating different architectural approaches for sto
 ## Attributes
 
 - Performance: The ability of the chosen storage to handle complex calculations efficiently.
-- Cost: The financial implications, including licensing and maintenance costs.
-- Client Preference: The client's preference for MS SQL Server.
-- Reliability: The ability of the storage to handle failures and recover from them.
-- Security: The ability of the storage to protect the data from unauthorized access.
+- Portability: The calculation engine shall be portable to other platforms, including web and mobile.
+- Compatibility: The client maintains a legacy desktop software that is biased towards MS SQL Server storage. Also they have people with SQL Server expertise.
 
 ## Environment
 
@@ -22,6 +20,12 @@ This trade-off analysis is evaluating different architectural approaches for sto
 - It shall be possible for accountant to change tax rules and form at any time without rebuild of the software.
 - Client is biased towards MS SQL Server storage.
 - Rules for the calculation engine are similar to a DAG (Directed Acyclic Graph) with nodes being the forms with formulas or input fields and edges being the dependencies between them.
+
+## Response
+
+- Recalculations shall be performed fast under the 1s at 100 requests per second load for a back-end solution.
+- Recalculations shall be performed under 1s for a front-end (mobile/web) solution.
+- Tax calculation engine is portable to other platforms, including web and mobile.
 
 ## Architectural approaches
 
@@ -74,7 +78,7 @@ The input fields for the calculation engine can be stored as a separate KEY-VALU
 | $Status                | Single |
 
 The calculation engine can be implemented as a micro-service that reads rules from the SQL Server into memory-optimize DAG structures and then performs the calculations using input fields.
-The logic of the calculation engine can be re-used in a web or mobile client 
+The logic of the calculation engine can be re-used in a web or mobile client without deep linking to the underlying rules schema in SQL Server, however there would be a need for a traslation layer between the SQL Server schema and the internal graph data model of the calculation engine.
 
 #### Performance
 
@@ -106,10 +110,13 @@ Cons:
 Azure Cosmos DB is a globally distributed, multi-model database service that supports document, key-value, wide-column, and graph databases. It is a NoSQL database that supports multiple APIs, including Gremlin API for graph databases. It supports Apache TinkerPop graph computing framework.
 
 The graph database with Gremlin API can be used to store the rules for the calculation engine in a native graph format. The input data can be stored in a separate document database.
+The calculation engine can be implemented as a micro-service that reads rules from the graph database into memory-optimize DAG structures.
 
 #### Performance
 
-The performance of the graph database with Gremlin API is similar to the performance of Neo4j. However, to gain a signficant performance boost against SQL Server, the calculation engine queries must be optimized in the following way:
+Cosmos DB is a cloud database and its performance depends on the selected capacity mode and provisioned thoughput. In general, we can say that the performance of graph queries is significantly faster than SQL Server (2X+) and is comparable with Neo4j in a similar environment.
+
+However, to gain a signficant performance boost against SQL Server, the calculation engine queries must be optimized in the following way:
 
 - Apply filters early and aggressively
 - Label edges to filter out irrelevant edges
@@ -122,20 +129,78 @@ One of the main benefits of using Azure Cosmos DB is that it is a managed cloud 
 #### Outcomes
 
 Pros:
-- Performance of the calculation engine is significantly faster for optimized queries.
-- 
 
+- Performance of the calculation engine is significantly faster that relational database for optimized queries.
+- Native graph schema for the calculation engine rules.
+- Azure Cosmos DB is a managed cloud solution that supports elastic scaling and high availability.
+- Powerful query language for graph databases.
 
-### Neo4j
+Cons:
+
+- Query language is not SQL-like and requires specialized knowledge.
+- The storage schema should be selected carefully to avoid performance issues.
+- Query language can limit the functionality of the calculation engine.
+
+### Neo4j+SQL Server
+
+Neo4j is a native graph database that supports ACID transactions and is optimized for storing and querying graphs. It supports the Cypher query language.
+Neo4j can store the rules for the calculation engine in a native graph format. The input data can be stored in a separate SQL Server database.
+
+```mermaid
+C4Context
+
+    Enterprise_Boundary(a1, "Tax Calculation System") {
+
+        System(SystemA, "Tax Calculation Engine")
+
+        SystemDb(SystemB, "SQL Server", "Stores relational part of the data")
+        SystemDb(SystemC, "Neoj4", "Stores calculation rules in graph form")
+
+        BiRel(SystemA, SystemB, "Uses")
+        BiRel(SystemA, SystemC, "Uses")
+    }
+      
+      UpdateElementStyle(customerA, $fontColor="red", $bgColor="grey", $borderColor="red")
+      UpdateRelStyle(customerA, SystemAA, $textColor="blue", $lineColor="blue", $offsetX="5")
+      UpdateRelStyle(SystemAA, SystemE, $textColor="blue", $lineColor="blue", $offsetY="-10")
+      UpdateRelStyle(SystemAA, SystemC, $textColor="blue", $lineColor="blue", $offsetY="-40", $offsetX="-50")
+      UpdateRelStyle(SystemC, customerA, $textColor="red", $lineColor="red", $offsetX="-50", $offsetY="20")
+
+      UpdateLayoutConfig($c4ShapeInRow="2", $c4BoundaryInRow="1")
+```
+
+#### Performance
+
+See [Azure Cosmos DB with Gremlin API](#azure-cosmos-db-with-gremlin-api) for performance comparison.
+
+#### Outcomes
+
+Pros:
+
+- Performance of the calculation engine is significantly faster that relational database for optimized queries.
+- Native graph schema for the calculation engine rules.
+- Powerful query language for graph databases.
+
+Cons:
+
+- Requires two separate storage products to store rules and input data.
+- The storage schema should be selected carefully to avoid performance issues.
+- Query language can limit the functionality of the calculation engine.
 
 ## Trade-off analysis table
 
 |    Architectural Decisions    | Sensitivity | Trade-off | Risk | Non-risk |
 |-------------------------------|-------------|-----------|------|----------|
-| MS SQL Server                 |             | T1        | R1   |          |
-| Azure Cosmos DB               |             |           |      |          |
-| Neo4j                         |             |           |      |          |
-
+| MS SQL Server                 | S1          |           | R1   |          |
+| Azure Cosmos DB               |             |           |      | N1       |
+| Neo4j+SQL Server              |             | T1        |      |          |
 
 ## Reasoning
 
+**R1**: SQL Server performance for graph queries is significantly slower than native graph databases. Depending on the complexity of the calculation engine rules and numver of rule sets, this can be a significant performance bottleneck and can lead to not meeting the performance requirements.
+
+**S1**: The performance of the calculation engine is very sensetive to the type quries that are performed over graph data and optimization of the underlying graph scheme.
+
+**N1**: SQL Server is a mature relational database management that can be used for store various types in native format including relational data and graph data. The query language for relational store is mostly compatible with SQL Server, so legacy code is easier to migrate for a new solution. Also many SQL Server tools are compatible with Azure Cosmos DB.
+
+**T1**: Using two separate products for storing rules and input data can be a significant overhead for the development and maintenance of the calculation engine compared to other solutions.
