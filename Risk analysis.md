@@ -6,21 +6,21 @@ This document provides risks analysis identified during trade-off analysis for t
 
 The estimated overall risk scope is calculated as `Probability X Impact` for each risk. Based on the calculated risk score, assign a risk rating or category. The following risk rating categories are used:
 
-- Low Risk: Score 1-3
-- Moderate Risk: Score 4-6
-- High Risk: Score 7-9
+- Low Risk: `Score 1-3`
+- Moderate Risk: `Score 4-6`
+- High Risk: `Score 7-9`
 
 Probability levels:
 
-- Low Probability: 1
-- Moderate Probability: 2
-- High Probability: 3
+- Low Probability: `1`
+- Moderate Probability: `2`
+- High Probability: `3`
 
 Impact levels:
 
-- Low Impact: 1
-- Moderate Impact: 2
-- High Impact: 3
+- Low Impact: `1`
+- Moderate Impact: `2`
+- High Impact: `3`
 
 ## Risks
 
@@ -48,22 +48,23 @@ Probability: **MODERATE** (2)
 
 #### Risk score
 
-Overall Risk Score: `2 (Probability) x 3 (Impact) = 6`
+Overall Risk Score: `2 (Probability) x 3 (Impact) = 6`  
 Risk Rating: With a score of 6, this risk would be categorized as a **Moderate Risk**.
 
 #### Mitigation strategies
 
 1. Pilot Testing and Proof of Concept
 
-Conduct a pilot test or proof of concept to evaluate Blazor WASM's capabilities in handling tax calculations and to identify any potential limitations or performance bottlenecks.
-Use this phase to assess the suitability of Blazor WASM for our specific use case.
+    Conduct a pilot test or proof of concept to evaluate Blazor WASM's capabilities in handling tax calculations and to identify any potential limitations or performance bottlenecks.
+    Use this phase to assess the suitability of Blazor WASM for our specific use case.
 
 2. Expertise and Training
 
-Invest in training and upskilling your development team in Blazor WASM to ensure they have the necessary expertise to work effectively with this technology.
-Leverage Microsoft partnership to evaluate the solution and provide guidance on best practices.
+    Invest in training and upskilling your development team in Blazor WASM to ensure they have the necessary expertise to work effectively with this technology.
+    Leverage Microsoft partnership to evaluate the solution and provide guidance on best practices.
 
 3. Utilize Blazor 7 that has extended security algorithms support
 
 4. WebAssembly Ahead-of-Time (AOT) Compilation
-Consider using WebAssembly AOT compilation to convert C# code to WebAssembly bytecode ahead of time. This can improve runtime performance compared to Just-In-Time (JIT) compilation.
+
+    Consider using WebAssembly AOT compilation to convert C# code to WebAssembly bytecode ahead of time. This can improve runtime performance compared to Just-In-Time (JIT) compilation.

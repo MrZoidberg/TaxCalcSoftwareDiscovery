@@ -158,8 +158,11 @@ Cons:
 ## Reasoning
 
 **R1**: Introducing a network call for each re-calculation can make a significant performance impact and may not be acceptable as an real-time solution.
+
 **T1**: The performance of the solution is highly sensitive to the network latency geographical location. To minimize latency the micro-service should be deployed in multiple regions which will increase TOC.
+
 **R2**: Blazor WASM is a new technology that is not yet widely adopted and have significant limitations in terms of compatibility with .NET Core and interopability with JavaScript. Ability of Blazor WASM to perform complex calculations is not yet proven and brings a risk that all requirements may not be satisfied due to technical feasibility and performance limitations. For example, Blazor WASM is [very limited on security alogorithm support](https://github.com/dotnet/designs/blob/main/accepted/2021/blazor-wasm-crypto.md) and interop with JavaScript is [very limited](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/import-export-interop?view=aspnetcore-7.0)
+
 **T2**: Securing client's data in-browser requires advanced encryption and security measures on the client that will have impact on performance. More advanced encryption algorithms may not be supported by Blazor WASM or significantly affect performance due to interop calls.
 
 ## Proposed solution
