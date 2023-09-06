@@ -74,6 +74,7 @@ The input fields for the calculation engine can be stored as a separate KEY-VALU
 | $Status                | Single |
 
 The calculation engine can be implemented as a micro-service that reads rules from the SQL Server into memory-optimize DAG structures and then performs the calculations using input fields.
+The logic of the calculation engine can be re-used in a web or mobile client 
 
 #### Performance
 
@@ -98,10 +99,32 @@ Cons:
 - Performance of the calculation engine is significantly slower for queries that require traversing the graph.
 - The storage schema is technically and mentally complex and requires a lot of effort to implement and maintain.
 - Object-relational impedance mismatch
+- Licensing costs for SQL Server Enterprise Edition.
 
 ### Azure Cosmos DB with Gremlin API
 
-Azure Cosmos DB is a globally distributed, multi-model database service that supports document, key-value, wide-column, and graph databases. It is a NoSQL database that supports multiple APIs, including Gremlin API for graph databases.
+Azure Cosmos DB is a globally distributed, multi-model database service that supports document, key-value, wide-column, and graph databases. It is a NoSQL database that supports multiple APIs, including Gremlin API for graph databases. It supports Apache TinkerPop graph computing framework.
+
+The graph database with Gremlin API can be used to store the rules for the calculation engine in a native graph format. The input data can be stored in a separate document database.
+
+#### Performance
+
+The performance of the graph database with Gremlin API is similar to the performance of Neo4j. However, to gain a signficant performance boost against SQL Server, the calculation engine queries must be optimized in the following way:
+
+- Apply filters early and aggressively
+- Label edges to filter out irrelevant edges
+- Try to not visit the same vertices multiple times
+- Use lables to filter out irrelevant vertices
+- Write queries so that the scope of a predicate is as narrow as possible
+
+One of the main benefits of using Azure Cosmos DB is that it is a managed cloud solution that supports elastic scaling with distributed data using graph partitioning.
+
+#### Outcomes
+
+Pros:
+- Performance of the calculation engine is significantly faster for optimized queries.
+- 
+
 
 ### Neo4j
 
